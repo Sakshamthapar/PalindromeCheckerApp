@@ -1,130 +1,93 @@
-import java.util.Scanner;
-import java.util.Stack;
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.Deque;
-import java.util.ArrayDeque;
+class PalindromeLinkedList {
 
-public class PalindromeCheckerApp {
+    // Node class for singly linked list
+    static class Node {
+        char data;
+        Node next;
 
-    static final String APP_NAME = "PalindromeChecker App";
-    static final String VERSION = "Version 1.0";
+        Node(char data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
 
+    // Function to create linked list from string
+    public static Node createList(String str) {
+        Node head = null, tail = null;
+
+        for (char ch : str.toCharArray()) {
+            Node newNode = new Node(ch);
+
+            if (head == null) {
+                head = newNode;
+                tail = newNode;
+            } else {
+                tail.next = newNode;
+                tail = newNode;
+            }
+        }
+        return head;
+    }
+
+    // Reverse linked list
+    public static Node reverse(Node head) {
+        Node prev = null;
+        Node current = head;
+
+        while (current != null) {
+            Node next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+
+        return prev;
+    }
+
+    // Check if linked list is palindrome
+    public static boolean isPalindrome(Node head) {
+
+        if (head == null || head.next == null)
+            return true;
+
+        Node slow = head;
+        Node fast = head;
+
+        // Find middle using fast and slow pointer
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Reverse second half
+        Node secondHalf = reverse(slow.next);
+
+        Node firstHalf = head;
+        Node tempSecond = secondHalf;
+
+        // Compare halves
+        while (tempSecond != null) {
+            if (firstHalf.data != tempSecond.data) {
+                return false;
+            }
+            firstHalf = firstHalf.next;
+            tempSecond = tempSecond.next;
+        }
+
+        return true;
+    }
+
+    // Main method
     public static void main(String[] args) {
 
-        System.out.println("=================================");
-        System.out.println(APP_NAME);
-        System.out.println(VERSION);
-        System.out.println("=================================");
+        String input = "madam";
 
-        hardcodedPalindromeCheck();
+        Node head = createList(input);
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nEnter a string: ");
-        String input = scanner.nextLine();
-
-        reverseStringCheck(input);
-        charArrayCheck(input);
-        stackCheck(input);
-        queueStackCheck(input);
-        dequeCheck(input);
-
-        scanner.close();
-    }
-
-    static void hardcodedPalindromeCheck() {
-        String word = "madam";
-        boolean result = isPalindromeString(word);
-        System.out.println("\nHardcoded Check: \"" + word + "\" is " + (result ? "a palindrome." : "not a palindrome."));
-    }
-
-    static void reverseStringCheck(String str) {
-        String reversed = "";
-        for (int i = str.length() - 1; i >= 0; i--) {
-            reversed += str.charAt(i);
+        if (isPalindrome(head)) {
+            System.out.println("The string is a Palindrome.");
+        } else {
+            System.out.println("The string is NOT a Palindrome.");
         }
-        System.out.println("Reverse String Check: " + resultMessage(str.equals(reversed)));
-    }
-
-    static void charArrayCheck(String str) {
-        char[] arr = str.toCharArray();
-        int left = 0;
-        int right = arr.length - 1;
-        boolean isPalindrome = true;
-
-        while (left < right) {
-            if (arr[left] != arr[right]) {
-                isPalindrome = false;
-                break;
-            }
-            left++;
-            right--;
-        }
-
-        System.out.println("Character Array Check: " + resultMessage(isPalindrome));
-    }
-
-    static void stackCheck(String str) {
-        Stack<Character> stack = new Stack<>();
-        for (char c : str.toCharArray()) {
-            stack.push(c);
-        }
-
-        boolean isPalindrome = true;
-        for (char c : str.toCharArray()) {
-            if (c != stack.pop()) {
-                isPalindrome = false;
-                break;
-            }
-        }
-
-        System.out.println("Stack Check: " + resultMessage(isPalindrome));
-    }
-
-    static void queueStackCheck(String str) {
-        Queue<Character> queue = new LinkedList<>();
-        Stack<Character> stack = new Stack<>();
-
-        for (char c : str.toCharArray()) {
-            queue.add(c);
-            stack.push(c);
-        }
-
-        boolean isPalindrome = true;
-        while (!queue.isEmpty()) {
-            if (queue.remove() != stack.pop()) {
-                isPalindrome = false;
-                break;
-            }
-        }
-
-        System.out.println("Queue + Stack Check: " + resultMessage(isPalindrome));
-    }
-
-    static void dequeCheck(String str) {
-        Deque<Character> deque = new ArrayDeque<>();
-
-        for (char c : str.toCharArray()) {
-            deque.add(c);
-        }
-
-        boolean isPalindrome = true;
-        while (deque.size() > 1) {
-            if (deque.removeFirst() != deque.removeLast()) {
-                isPalindrome = false;
-                break;
-            }
-        }
-
-        System.out.println("Deque Check: " + resultMessage(isPalindrome));
-    }
-
-    static boolean isPalindromeString(String str) {
-        String reversed = new StringBuilder(str).reverse().toString();
-        return str.equals(reversed);
-    }
-
-    static String resultMessage(boolean result) {
-        return result ? "Palindrome" : "Not a Palindrome";
     }
 }
